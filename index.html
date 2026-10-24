@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Room type predictor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="lights" aria-hidden="true"></canvas>
+
+  <div class="shell">
+    <header class="top">
+      <h1>What kind of listing is this?</h1>
+      <p>Describe a New York listing and the model predicts whether it’s an entire home, a private room or a shared room.</p>
+      <div class="status" id="status"><span class="dot"></span><span id="statusText">Checking API…</span></div>
+    </header>
+
+    <main class="grid">
+      <form id="form" novalidate>
+        <div class="presets">
+          <span>Try an example</span>
+          <button type="button" class="ghost" data-preset="midtown">Midtown apartment</button>
+          <button type="button" class="ghost" data-preset="bushwick">Bushwick room</button>
+          <button type="button" class="ghost" data-preset="flushing">Flushing shared</button>
+        </div>
+
+        <section class="card" style="--i:1">
+          <h2>Location</h2>
+          <div class="field">
+            <span class="label">Borough</span>
+            <div class="chips" id="groupChips">
+              <label><input type="radio" name="neighbourhood_group" value="Manhattan" checked><span>Manhattan</span></label>
+              <label><input type="radio" name="neighbourhood_group" value="Brooklyn"><span>Brooklyn</span></label>
+              <label><input type="radio" name="neighbourhood_group" value="Queens"><span>Queens</span></label>
+              <label><input type="radio" name="neighbourhood_group" value="Bronx"><span>Bronx</span></label>
+              <label><input type="radio" name="neighbourhood_group" value="Staten Island"><span>Staten Island</span></label>
+            </div>
+          </div>
+          <div class="field">
+            <label class="label" for="neighbourhood">Neighbourhood</label>
+            <input id="neighbourhood" name="neighbourhood" list="hoods" placeholder="Start typing, e.g. Midtown" autocomplete="off">
+            <datalist id="hoods"></datalist>
+            <small class="err"></small>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label class="label" for="latitude">Latitude</label>
+              <input id="latitude" name="latitude" type="number" step="any" placeholder="40.7549">
+              <small class="err"></small>
+            </div>
+            <div class="field">
+              <label class="label" for="longitude">Longitude</label>
+              <input id="longitude" name="longitude" type="number" step="any" placeholder="-73.9840">
+              <small class="err"></small>
+            </div>
+          </div>
+          <p class="hint">Picking a known neighbourhood fills in coordinates for you. You can still adjust them.</p>
+        </section>
+
+        <section class="card" style="--i:2">
+          <h2>Listing</h2>
+          <div class="row">
+            <div class="field">
+              <label class="label" for="price">Price per night ($)</label>
+              <input id="price" name="price" type="number" step="any" min="0" placeholder="150">
+              <small class="err"></small>
+            </div>
+            <div class="field">
+              <label class="label" for="minimum_nights">Minimum nights</label>
+              <input id="minimum_nights" name="minimum_nights" type="number" step="1" min="1" placeholder="2">
+              <small class="err"></small>
+            </div>
+          </div>
+          <div class="field">
+            <label class="label" for="availability_365">Available days per year <output id="availOut">180</output></label>
+            <input id="availability_365" name="availability_365" type="range" min="0" max="365" value="180">
+          </div>
+        </section>
+
+        <section class="card" style="--i:3">
+          <h2>Reviews and host</h2>
+          <div class="row">
+            <div class="field">
+              <label class="label" for="number_of_reviews">Total reviews</label>
+              <input id="number_of_reviews" name="number_of_reviews" type="number" step="1" min="0" placeholder="25">
+              <small class="err"></small>
+            </div>
+            <div class="field">
+              <label class="label" for="reviews_per_month">Reviews per month</label>
+              <input id="reviews_per_month" name="reviews_per_month" type="number" step="any" min="0" placeholder="0.8">
+              <small class="err"></small>
+            </div>
+          </div>
+          <div class="field">
+            <label class="label" for="calculated_host_listings_count">Listings by this host</label>
+            <input id="calculated_host_listings_count" name="calculated_host_listings_count" type="number" step="1" min="0" placeholder="1">
+            <small class="err"></small>
+          </div>
+        </section>
+
+        <button type="submit" class="go" id="submit"><span>Predict room type</span></button>
+      </form>
+
+      <aside class="result" id="result" data-state="idle" aria-live="polite">
+        <div class="ringwrap">
+          <svg viewBox="0 0 140 140" class="ring" aria-hidden="true">
+            <circle class="track" cx="70" cy="70" r="54"/>
+            <circle class="fg" id="ringFg" cx="70" cy="70" r="54"/>
+          </svg>
+          <div class="center">
+            <strong id="pct">–</strong>
+            <span id="pctLabel">confidence</span>
+          </div>
+        </div>
+        <h2 id="answer">Waiting for a listing</h2>
+        <p id="sub" class="sub">Fill in the details and press Predict room type.</p>
+        <div class="bars" id="bars"></div>
+      </aside>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="alert"></div>
+  <script src="script.js"></script>
+</body>
+</html>
