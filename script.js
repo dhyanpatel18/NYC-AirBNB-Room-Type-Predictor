@@ -1,5 +1,5 @@
 // Change this if your FastAPI server runs somewhere else
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = "https://nyc-airbnb-room-type-predictor-af3d.onrender.com";
 
 // Class order assumed to be alphabetical (scikit-learn default).
 // Check with: model.classes_  — and reorder here if it differs.
